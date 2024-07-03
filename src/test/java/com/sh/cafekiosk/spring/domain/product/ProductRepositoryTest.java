@@ -1,5 +1,6 @@
 package com.sh.cafekiosk.spring.domain.product;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,30 +23,12 @@ class ProductRepositoryTest {
     private ProductRepository productRepository;
 
     @Test
-    @DisplayName("원하는 판매상태를 리스트로 전달하면 해당 상품 리스트를 반환한다")
+    @DisplayName("상품의 판매상태 리스트로 상품 리스트를 조회한다")
     void findAllBySellingStatusIn() {
         //given
-        Product product1 = Product.builder()
-                .productNumber("001")
-                .type(HANDMADE)
-                .sellingStatus(SELLING)
-                .name("아메리카노")
-                .price(4000)
-                .build();
-        Product product2 = Product.builder()
-                .productNumber("002")
-                .type(HANDMADE)
-                .sellingStatus(HOLD)
-                .name("카페라떼")
-                .price(5000)
-                .build();
-        Product product3 = Product.builder()
-                .productNumber("003")
-                .type(HANDMADE)
-                .sellingStatus(STOP_SELLING)
-                .name("팥빙수")
-                .price(10000)
-                .build();
+        Product product1 = createProduct("001", HANDMADE, SELLING, "아메리카노", 4000);
+        Product product2 = createProduct("002", HANDMADE, HOLD, "카페라떼", 5000);
+        Product product3 = createProduct("003", HANDMADE, STOP_SELLING, "팥빙수", 10000);
         productRepository.saveAll(List.of(product1, product2, product3));
 
         //when
@@ -58,5 +41,39 @@ class ProductRepositoryTest {
                         tuple("001", "아메리카노", SELLING),
                         tuple("002", "카페라떼", HOLD)
                 );
+    }
+    
+    @Test
+    @DisplayName("상품의 상품번호 리스트로 상품 리스트를 조회한다.")
+    void findAllByProductNumberIn() {
+        //given
+        Product product1 = createProduct("001", HANDMADE, SELLING, "아메리카노", 4000);
+        Product product2 = createProduct("002", HANDMADE, SELLING, "카페라떼", 5000);
+        Product product3 = createProduct("003", HANDMADE, SELLING, "팥빙수", 10000);
+        productRepository.saveAll(List.of(product1, product2, product3));
+        //when
+        List<Product> products = productRepository.findAllByProductNumberIn(List.of("001", "002"));
+        //then
+        assertThat(products).hasSize(2)
+                .extracting(Product::getProductNumber, Product::getName, Product::getSellingStatus)
+                .containsExactlyInAnyOrder(
+                        tuple("001", "아메리카노", SELLING),
+                        tuple("002", "카페라떼", SELLING)
+                );
+    }
+
+    private Product createProduct(String productNumber,
+                                  ProductType productType,
+                                  ProductSellingStatus productSellingStatus,
+                                  String name,
+                                  int price) {
+
+        return Product.builder()
+                .productNumber(productNumber)
+                .type(productType)
+                .sellingStatus(productSellingStatus)
+                .name(name)
+                .price(price)
+                .build();
     }
 }
