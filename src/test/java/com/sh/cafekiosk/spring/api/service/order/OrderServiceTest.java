@@ -1,6 +1,7 @@
 package com.sh.cafekiosk.spring.api.service.order;
 
 import com.sh.cafekiosk.spring.api.controller.order.request.OrderCreateRequest;
+import com.sh.cafekiosk.spring.api.service.product.response.ProductResponse;
 import com.sh.cafekiosk.spring.domain.product.Product;
 import com.sh.cafekiosk.spring.domain.product.ProductRepository;
 import com.sh.cafekiosk.spring.domain.product.ProductSellingStatus;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("test")
 @SpringBootTest
 class OrderServiceTest {
 
@@ -32,6 +35,8 @@ class OrderServiceTest {
     @DisplayName("상품번호(productNumber) 리스트를 받아 주문(OrderResponse)을 생성한다.")
     void createOrder() {
         //given
+        LocalDateTime registeredDateTime = LocalDateTime.now();
+
         Product product1 = createProduct("001", HANDMADE, SELLING, "아메리카노", 4000);
         Product product2 = createProduct("002", HANDMADE, SELLING, "카페라떼", 5000);
         Product product3 = createProduct("003", HANDMADE, SELLING, "팥빙수", 10000);
@@ -42,15 +47,18 @@ class OrderServiceTest {
                 .build();
 
         //when
-        OrderCreateResponse orderResponse = orderService.createOrder(orderRequest, LocalDateTime.now());
+        OrderCreateResponse orderResponse = orderService.createOrder(orderRequest, registeredDateTime);
 
         //then
         assertThat(orderResponse.getId()).isNotNull();
         assertThat(orderResponse)
                 .extracting(OrderCreateResponse::getRegisteredDateTime, OrderCreateResponse::getTotalPrice)
+                .contains(registeredDateTime, 9000);
+        assertThat(orderResponse.getProductResponses()).hasSize(2)
+                .extracting(ProductResponse::getProductNumber, ProductResponse::getPrice)
                 .containsExactlyInAnyOrder(
-                        tuple("001", 4001),
-                        tuple("002", 5001)
+                        tuple("001", 4000),
+                        tuple("002", 5000)
                 );
     }
 

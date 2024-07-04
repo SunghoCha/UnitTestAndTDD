@@ -25,7 +25,8 @@ public class OrderService {
         List<String> productNumbers = orderCreateRequest.getProductNumbers();
         List<Product> products = productRepository.findAllByProductNumberIn(productNumbers);
 
-        Order.create(products, registeredDateTime);
-        return null;
+        Order order = Order.create(products, registeredDateTime);
+        Order savedOrder = orderRepository.save(order);
+        return OrderCreateResponse.of(savedOrder);
     }
 }

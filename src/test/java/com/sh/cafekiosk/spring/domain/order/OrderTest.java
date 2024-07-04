@@ -4,6 +4,7 @@ import com.sh.cafekiosk.spring.domain.product.Product;
 import com.sh.cafekiosk.spring.domain.product.ProductRepository;
 import com.sh.cafekiosk.spring.domain.product.ProductSellingStatus;
 import com.sh.cafekiosk.spring.domain.product.ProductType;
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,23 @@ class OrderTest {
         assertThat(order.getOrderStatus()).isEqualByComparingTo(OrderStatus.INIT); // enum비교 메서드
     }
 
+    @Test
+    @DisplayName("주문 생성 시 주문 등록 시간을 기록한다.")
+    void registeredDateTime() {
+        //given
+        LocalDateTime registeredDateTime = LocalDateTime.now();
+
+        Product product1 = createProduct("001", HANDMADE, SELLING, "아메리카노", 4000);
+        Product product2 = createProduct("002", HANDMADE, SELLING, "카페라떼", 5000);
+        Product product3 = createProduct("003", HANDMADE, SELLING, "팥빙수", 10000);
+
+        //when
+        Order order = Order.create(List.of(product1, product2, product3), registeredDateTime);
+
+        //then
+        assertThat(order.getRegisteredDateTime()).isEqualTo(registeredDateTime);
+    }
+
     private Product createProduct(String productNumber,
                                   ProductType productType,
                                   ProductSellingStatus productSellingStatus,
@@ -67,4 +85,6 @@ class OrderTest {
                 .price(price)
                 .build();
     }
+
+
 }
