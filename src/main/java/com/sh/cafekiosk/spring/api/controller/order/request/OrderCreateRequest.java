@@ -1,11 +1,10 @@
 package com.sh.cafekiosk.spring.api.controller.order.request;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
+@NoArgsConstructor
 @Getter
 public class OrderCreateRequest {
 

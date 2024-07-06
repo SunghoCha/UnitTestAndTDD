@@ -1,6 +1,7 @@
 package com.sh.cafekiosk.spring.domain.product;
 
-import org.assertj.core.api.Assertions;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,9 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static com.sh.cafekiosk.spring.domain.product.ProductSellingStatus.*;
-import static com.sh.cafekiosk.spring.domain.product.ProductType.*;
+import static com.sh.cafekiosk.spring.domain.product.ProductType.HANDMADE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -21,6 +21,11 @@ class ProductRepositoryTest {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @AfterEach
+    void tearDown() {
+        productRepository.deleteAllInBatch(); // deleteAll() 과의 차이점은?
+    }
 
     @Test
     @DisplayName("상품의 판매상태 리스트로 상품 리스트를 조회한다")
