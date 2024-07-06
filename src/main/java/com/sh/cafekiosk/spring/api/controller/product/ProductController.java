@@ -1,9 +1,12 @@
 package com.sh.cafekiosk.spring.api.controller.product;
 
+import com.sh.cafekiosk.spring.api.controller.product.dto.request.ProductCreateRequest;
 import com.sh.cafekiosk.spring.api.service.product.ProductService;
 import com.sh.cafekiosk.spring.api.service.product.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -17,5 +20,10 @@ public class ProductController {
     @GetMapping("api/v1/products/selling")
     public List<ProductResponse> getSellingProducts() {
         return productService.getSellingProducts(); // 리스트를 반환하면 유연성 떨어지는데..ㄴ
+    }
+
+    @PostMapping("api/v1/products/new")
+    public void createProduct(@RequestBody ProductCreateRequest request) {
+        productService.createProduct(request);
     }
 }

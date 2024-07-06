@@ -67,6 +67,30 @@ class ProductRepositoryTest {
                 );
     }
 
+    @Test
+    @DisplayName("가장 마지막으로 저장한 상품의 상품번호를 읽어온다.")
+    void findLatestProductNumber() {
+        //given
+        Product product1 = createProduct("001", HANDMADE, SELLING, "아메리카노", 4000);
+        Product product2 = createProduct("002", HANDMADE, SELLING, "카페라떼", 5000);
+        Product product3 = createProduct("003", HANDMADE, SELLING, "팥빙수", 10000);
+        productRepository.saveAll(List.of(product1, product2, product3));
+
+        //when
+        String latestProductNumber = productRepository.findLatestProduct();
+        //then
+        assertThat(latestProductNumber).isEqualTo("003");
+    }
+    
+    @Test
+    @DisplayName("가장 마지막으로 저장한 상품의 상품번호를 읽어올 때, 상품이 하나도 없는 경우에는 null을 반환한다.")
+    void findLatestProductNumberWhenProductIsEmpty() {
+        //given
+        String latestProductNumber = productRepository.findLatestProduct();
+        //expected
+        assertThat(latestProductNumber).isNull();
+    }
+
     private Product createProduct(String productNumber,
                                   ProductType productType,
                                   ProductSellingStatus productSellingStatus,
