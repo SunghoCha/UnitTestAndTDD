@@ -1,5 +1,6 @@
 package com.sh.cafekiosk.spring.domain.product;
 
+import com.sh.cafekiosk.spring.api.controller.product.dto.request.ProductCreateRequest;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;

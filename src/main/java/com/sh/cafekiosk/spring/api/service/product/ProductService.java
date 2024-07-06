@@ -32,18 +32,17 @@ public class ProductService {
 
     public ProductResponse createProduct(ProductCreateRequest request) {
         String nextProductNumber = createNextProductNumber();
+        Product product = request.toEntity(nextProductNumber);
+        Product savedProduct = productRepository.save(product);
 
-        return ProductResponse.builder()
-                .productNumber(nextProductNumber)
-                .type(request.getType())
-                .sellingStatus(request.getSellingStatus())
-                .name(request.getName())
-                .price(request.getPrice())
-                .build();
+        return ProductResponse.of(savedProduct);
     }
 
     private String createNextProductNumber() {
         String latestProductNumber = productRepository.findLatestProduct();
+        if (latestProductNumber == null) {
+            return "001";
+        }
         int latestProductNumberInt = Integer.parseInt(latestProductNumber);
         int nextProductNumberInt = latestProductNumberInt + 1;
         return  String.format("%03d", nextProductNumberInt);
