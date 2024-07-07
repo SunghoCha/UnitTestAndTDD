@@ -34,8 +34,8 @@ public class ProductService {
         String nextProductNumber = createNextProductNumber();
         Product product = request.toEntity(nextProductNumber);
         Product savedProduct = productRepository.save(product);
-
-        return ProductResponse.of(savedProduct);
+        ProductResponse result = ProductResponse.of(savedProduct);
+        return result;
     }
 
     private String createNextProductNumber() {
